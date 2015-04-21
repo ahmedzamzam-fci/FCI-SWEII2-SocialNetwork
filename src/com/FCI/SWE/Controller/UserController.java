@@ -51,7 +51,8 @@ import com.FCI.SWE.ServicesModels.FriendRequest;
 @Path("/")
 @Produces("text/html")
 public class UserController {
-	
+
+
 	
 	/**
 	 * Action function to render Signup page, this function will be executed
@@ -64,13 +65,6 @@ public class UserController {
 	@Path("/signup")
 	public Response signUp() {
 		return Response.ok(new Viewable("/jsp/register")).build();
-	}
-
-	
-	@GET
-	@Path("/search")
-	public Response search(){
-		return Response.ok(new Viewable("/jsp/search")).build();
 	}
 
 
@@ -179,6 +173,7 @@ public class UserController {
 	@Produces("text/html")
 	public Response home(@FormParam("uname") String uname,
 			@FormParam("password") String pass)  {
+		
 		String serviceUrl = "http://localhost:8888/rest/LoginService";
 		try {
 			URL url = new URL(serviceUrl);

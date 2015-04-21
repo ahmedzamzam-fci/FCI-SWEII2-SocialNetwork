@@ -4,6 +4,8 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
+
+
 public class User {
 	private long id;
 	private String name;
@@ -29,6 +31,10 @@ public class User {
 
 	}
 	
+	public User() {
+		// TODO Auto-generated constructor stub
+	}
+
 	private void setId(long id){
 		this.id = id;
 	}
@@ -82,6 +88,35 @@ public class User {
 		currentActiveUser=null;
 		return currentActiveUser;
 	}
+	public static User parseUserInfo(String json){
+
+		JSONParser parser= new JSONParser();
+		try{
+		JSONObject object=(JSONObject)parser.parse(json);
+		User user=new User();
+		user.setEmail(object.get("email").toString());
+		user.setName(object.get("name").toString());
+		return user;
+		}
+		catch(ParseException e){
+		e.printStackTrace();
+		}
+
+
+		return null;
+
+		}
+
+	private void setName(String string) {
+		name=string;
+		
+	}
+
+	private void setEmail(String string) {
+		email=string;
+		
+	}
+
 
 
 

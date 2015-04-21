@@ -26,6 +26,9 @@ import javax.ws.rs.core.Response;
 
 
 
+
+
+
 import org.glassfish.jersey.server.mvc.Viewable;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -36,6 +39,8 @@ import com.FCI.SWE.Models.User;
 import com.FCI.SWE.ServicesModels.Datastore_Notification;
 import com.FCI.SWE.ServicesModels.FriendRequest;
 import com.FCI.SWE.ServicesModels.GroupInfo;
+import com.FCI.SWE.ServicesModels.HashtagEntity;
+import com.FCI.SWE.ServicesModels.PostEntity;
 import com.FCI.SWE.ServicesModels.UserEntity;
 
 /**
@@ -108,6 +113,10 @@ private static int Id=0;
 		}
 		return object.toString();
 		}
+	
+
+
+	
 	@POST
 	@Path("/AddFriendService")
 	public String SendFriendRequest(@FormParam("uname") String reciever) {
@@ -192,30 +201,78 @@ private static int Id=0;
 		}
 		return object1.toString() ;
 		}
-
 	
 	@POST
-	@Path("/ShowRequests")
-	public String ShowRequests(String user){
-		FriendRequest obj =new FriendRequest();
-		Vector<String>Results=new Vector<String>();
-		Results=obj.searchRequest(user);
-		for(int i=0;i<Results.size();i++){
-		System.out.println("Results "+i+1+" "+Results.get(i));
-		
+	@Path("/SearchHashtag")
+	public String searchHashtag(@FormParam("hash") String hash){
+		Vector<HashtagEntity> hashtag = HashtagEntity.searchTag(hash);
+		JSONArray returnedJson = new JSONArray();
+		for (HashtagEntity tag : hashtag) {
+			returnedJson.add(tag.toJson());
 		}
-		JSONObject object1 = new JSONObject();
-		object1.put("Status", "OK");
-		return object1.toString();
+		return returnedJson.toJSONString();		
 	}
+
+	
+
 	public static int getId() {
 		return Id;
 	}
 	public static void setId(int id) {
 		Id = id;
 	}
-
-
-
-
+	@POST
+	@Path("/WritePost")
+	public String WritePost(@FormParam("place") String place,@FormParam("content") String content
+			){
+		boolean hashtag=false;
+		int y=content.length();
+		int Start=0;
+		int end=0;
+		for(int i=0;i<y;i++){
+			if(content.charAt(i)=='#'){
+				Start=i;
+				hashtag=true;
+				break;
+			}
+				}
+		if(hashtag==true){
+	 String temp=content.substring(4,y);
+	 int z=temp.length();
+	 for(int i=0;i<z;i++){
+		if(temp.charAt(i)==' '){
+			end=i;
+			break;
+			}
+		}
+	 String contentHastag=temp.substring(0,end);
+	 HashtagEntity hash=new HashtagEntity(contentHastag,content,current,place);
+	 boolean hastagflag=hash.saveHashtag();
+	 PostEntity post=new PostEntity(place,current,content);
+		JSONObject object = new JSONObject();
+		if(post.savePost()==true && hastagflag==true){
+		object.put("Status", "OK");
+		return object.toString();
+		}
+		else if(post.savePost()==false){
+			object.put("Status", "failed");
+			
+		}
+		return object.toString();
 }
+else{	
+		PostEntity post=new PostEntity(place,current,content);
+		JSONObject object = new JSONObject();
+		if(post.savePost()==true){
+		object.put("Status", "OK");
+		return object.toString();
+		}
+		else if(post.savePost()==false){
+			object.put("Status", "failed");
+			
+		}
+		return object.toString();
+	
+	}
+	}
+	}

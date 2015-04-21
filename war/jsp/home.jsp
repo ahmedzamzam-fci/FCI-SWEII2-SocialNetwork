@@ -25,7 +25,10 @@
   <br><br>
   <form action="/social/Logout" method="Get">
      <input type="submit" value="logout">
-  
+  <br><br>
+  </form>
+  <form action="/social/search" method="Get">
+     <input type="submit" value="search">
   </form>
 </body>
 </html>

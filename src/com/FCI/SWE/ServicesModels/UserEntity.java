@@ -2,6 +2,7 @@ package com.FCI.SWE.ServicesModels;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Vector;
 
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -72,6 +73,32 @@ public class UserEntity {
 	public String getPass() {
 		return password;
 	}
+	public static Vector<UserEntity> searchUser1(String uname) {
+		DatastoreService dataStore = DatastoreServiceFactory
+				.getDatastoreService();
+		Query gae = new Query("users");
+		PreparedQuery preparedQuery = dataStore.prepare(gae);
+		Vector<UserEntity> returnedUsers = new Vector<UserEntity>();
+		for (Entity entity : preparedQuery.asIterable()) {
+			String currentName = entity.getProperty("name").toString();
+			if (currentName.contains(uname)) {
+				UserEntity user = new UserEntity(entity.getProperty("name").toString(),
+						entity.getProperty("email").toString(), entity
+						.getProperty("password").toString());
+				user.setId(entity.getKey().getId());
+				returnedUsers.add(user);
+			}
+		}
+		return returnedUsers;
+
+	}
+	public JSONObject toJson(){
+		JSONObject object = new JSONObject();
+		object.put("name", name);
+		object.put("email", email);
+		object.put("id", id);
+		return object;
+	}
 
 	
 	/**
@@ -99,12 +126,15 @@ public class UserEntity {
 						"name").toString(), entity.getProperty("email")
 						.toString(), entity.getProperty("password").toString());
 				returnedUser.setId(entity.getKey().getId());
-				return returnedUser;
+				return returnedUser;	
 			}
+		
 		}
-
 		return null;
+	
 	}
+	
+	
 	
 	public static boolean  searchUser(String name) {
 		DatastoreService datastore = DatastoreServiceFactory
@@ -157,6 +187,9 @@ public class UserEntity {
 
 	}
 
+		
+	
+	
 	public static UserEntity getUser(String json) {
 		JSONParser parser = new JSONParser();
 		try {
